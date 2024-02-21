@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "post_lambda"
+version = "0.1.0"
+description = ""
+authors = ["kinfinity <ksupro1@gmail.com>"]
+packages = [{include = "post_lambda", from = "src"}]
+
+[tool.poetry.scripts]
+lambda = "post_lambda.app:lambda_handler"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "^1.34.46"
+black = "^24.2.0"
+docopt = "^0.6.2"
+types-docopt = "^0.6.11"
+mypy = "^1.8.0"
+isort = "^5.13.2"
+pylint = "^3.0.3"
+asyncio = "^3.4.3"
+requests = "^2.31.0"
+pytest = "^8.0.1"
+pytest-cov = "^4.1.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

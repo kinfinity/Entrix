@@ -1,0 +1,53 @@
+name: Build Lambdas
+on:
+    push:
+        branches:
+        - main
+    workflow_dispatch:
+    pull_request:
+        branches:
+        - feat/lambda-build
+
+env:
+  PYTHON_VERSION: 3.12.2
+
+jobs:
+  build-lambdas:
+    name: CodeBuild - Lambda
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache poetry packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry/cache
+            ~/.cache/pypoetry/artifacts
+          key: poetry-packages-${{ env.PYTHON_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+
+      - name: Setup Python tools
+        run: |
+          pip install poetry==1.7.1
+
+      - name: Build and test all projects
+        run: |
+          ci/scripts/code/build-all-poetry-projects.sh
+         
+      - name: Create test report
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always() && (! contains(github.ref, '/dependabot/'))
+        with:
+          check_name: Python Tests
+          files: |
+            reports/*-junit.xml
