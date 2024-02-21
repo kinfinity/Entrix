@@ -1,19 +1,19 @@
-name: Build Lambdas
+name: Build_Lambdas
 on:
-    push:
-        branches:
-        - main
-    workflow_dispatch:
-    pull_request:
-        branches:
-        - feat/lambda-build
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 env:
   PYTHON_VERSION: 3.12.2
 
 jobs:
-  build-lambdas:
-    name: CodeBuild - Lambda
+  build_lambdas:
+    name: CodeBuild-Lambda
     permissions:
       contents: read
       issues: read
@@ -21,10 +21,11 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -34,7 +35,7 @@ jobs:
           path: |
             ~/.cache/pypoetry/cache
             ~/.cache/pypoetry/artifacts
-          key: poetry-packages-${{ env.PYTHON_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+          key: poetry-packages-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
 
       - name: Setup Python tools
         run: |
@@ -42,12 +43,14 @@ jobs:
 
       - name: Build and test all projects
         run: |
+          chmod +x ci/scripts/code/build-all-poetry-projects.sh
+          chmod +x ci/scripts/code/build-poetry-project.sh
           ci/scripts/code/build-all-poetry-projects.sh
-         
+
       - name: Create test report
         uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always() && (! contains(github.ref, '/dependabot/'))
+        if: always() && (!contains(github.ref, '/dependabot/'))
         with:
-          check_name: Python Tests
+          check_name: Python_Tests
           files: |
             reports/*-junit.xml
