@@ -1,0 +1,19 @@
+{
+    "docker_context_directory": ".",
+    "docker_file": "Dockerfile",
+    "lambdas": {
+        "post_lambda": {
+            "service_name": "post_lambda",
+            "ecr_tag": 20240221.1
+        },
+        "lambda_a": {
+            "service_name": "lambda_a",
+            "ecr_tag": 20240221.1
+        },
+        "lambda_b": {
+            "service_name": "lambda_b",
+            "ecr_tag": 20240221.1
+        }
+    },
+    "ecr_region": "us-east-2"
+}
