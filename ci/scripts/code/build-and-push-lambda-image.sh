@@ -23,10 +23,11 @@ pushd ${LAMBDA_DIR} > /dev/null
 
 # LOGIN TO ECR
 aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REGISTRY
-
-# Get more verbose logs
-export DOCKER_CONTENT_TRUST=0
-export DEBUG=1
+# Check if the repository exists else create
+repository_exists=$(aws ecr describe-repositories --repository-names k_${LAMBDA_NAME} --region ${REGION} --output json 2>/dev/null)
+if [ -z "$repository_exists" ];then
+    aws ecr create-repository --repository-name k_${LAMBDA_NAME} --region ${REGION}
+fi
 
 # BUILD IMAGE  & PUSH
 echo Docker Build and Push
