@@ -1,5 +1,5 @@
 {
-    "docker_context_directory": ".",
+    "docker_context_directory": "lambda",
     "docker_file": "Dockerfile",
     "lambdas": {
         "post_lambda": {
@@ -15,5 +15,5 @@
             "ecr_tag": 20240221.1
         }
     },
-    "ecr_region": "us-east-2"
+    "ecr_region": "eu-west-1"
 }

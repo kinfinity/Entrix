@@ -22,7 +22,7 @@ for service, service_vars in config["lambdas"].items():
     # build and push config image
     subprocess.check_call(
         [
-            "ci/scripts/build-and-push-lambda-image.sh",
+            "ci/scripts/code/build-and-push-lambda-image.sh",
             config["docker_context_directory"],
             service_vars["service_name"],
             config["ecr_region"],

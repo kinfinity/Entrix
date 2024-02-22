@@ -2,14 +2,19 @@ FROM public.ecr.aws/lambda/python:3.12
 ARG LAMBDA_NAME
 
 # Copy, Set working Dir
-WORKDIR /var/task
-COPY /${LAMBDA_NAME}/pyproject.toml /${LAMBDA_NAME}/poetry.lock  /app/
-
-# Install poetry and project dependencies
-RUN pip install poetry && poetry config virtualenvs.create false && poetry install --no-dev
+WORKDIR /var/task/app
+COPY /${LAMBDA_NAME}/pyproject.toml /${LAMBDA_NAME}/poetry.lock  /var/task/app/
 
 # Copy the entire application code to the container
-COPY . .
+COPY /${LAMBDA_NAME}/. ./
 
-# Set the CMD to your Lambda handler (adjust as needed)
+# Install poetry and project dependencies
+RUN pip install --upgrade pip && \
+    pip install poetry && \
+    chmod +x ./* && \
+    poetry config virtualenvs.create false && \
+    poetry config virtualenvs.in-project true && \
+    poetry install --no-dev
+
+# Handler
 CMD ["poetry","run" , "lambda"]
