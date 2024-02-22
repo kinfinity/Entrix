@@ -51,7 +51,7 @@ jobs:
           ci/scripts/code/build-all-poetry-projects.sh
 
       - name: Create test report
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always() && (!contains(github.ref, '/dependabot/'))
         with:
           check_name: Python_Tests
