@@ -1,0 +1,83 @@
+name: Build_Lambdas
+on:
+  push:
+    branches:
+      - feat/lambdad-build
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-2
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  IMAGE_TAG: $(echo ${{ github.sha }} | cut -c1-4)
+  PYTHON_VERSION: 3.12.2
+
+jobs:
+  build_lambdas:
+    name: CodeBuild-Lambda
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache poetry packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pypoetry/cache
+            ~/.cache/pypoetry/artifacts
+          key: poetry-packages-${{ runner.os }}-${{ hashFiles('**/pyproject.toml') }}
+
+      - name: Setup Python tools
+        run: |
+          pip install poetry==1.7.1
+
+      - name: Build and test all projects
+        run: |
+          chmod +x ci/scripts/code/build-all-poetry-projects.sh
+          chmod +x ci/scripts/code/build-poetry-project.sh
+          ci/scripts/code/build-all-poetry-projects.sh
+
+      - name: Create test report
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: always() && (!contains(github.ref, '/dependabot/'))
+        with:
+          check_name: Python_Tests
+          files: |
+            reports/**-junit.xml
+
+  config-images:
+    name: ImageBuild-Lambda
+    needs: build_lambdas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Build and Push Config Images
+        run: |
+          python ci/scripts/build-and-push-all-lambdas.py  --config ci/configs/pipeline-config.json --gitsha ${{ env.IMAGE_TAG }} --registry ${{ secrets.ECR_REGISTRY }}
+      

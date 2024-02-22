@@ -1,0 +1,15 @@
+*.js
+!jest.config.js
+*.d.ts
+node_modules
+*-junit.xml
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+
+# Python
+*-pyc
+__pycache__/
+*.py[cod]
+*$py.class
