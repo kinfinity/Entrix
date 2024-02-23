@@ -1,8 +1,5 @@
 name: Deploy_CDK
 on:
-  push:
-    branches:
-      - feat/infrastructure
   workflow_dispatch:
   pull_request:
     branches:
@@ -10,12 +7,13 @@ on:
 
 env:
   AWS_REGION: eu-west-1
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   NODE_VERSION: 20.11.1
+  PYTHON_VERSION: 3.12.2
 
 jobs:
   deploy_cdk:
     name: CDK_DEPLOY
+    environment: Dev
     permissions:
       contents: read
       issues: read
@@ -32,6 +30,16 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: Install CDK
+        run: |
+          python -m pip install --upgrade pip
+          npm install -g aws-cdk
+
       - name: Install Dependencies
         run: |
           npm ci
@@ -47,6 +55,7 @@ jobs:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+            AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
          
       - name: Deploy AWS CDK Stack
         run: |
@@ -55,4 +64,5 @@ jobs:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+            AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
             

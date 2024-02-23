@@ -1,8 +1,5 @@
 name: Build_Lambdas
 on:
-  push:
-    branches:
-      - feat/infrastructure
   workflow_dispatch:
   pull_request:
     branches:
