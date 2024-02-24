@@ -8,43 +8,37 @@ import random
 from typing import Any, Dict, Optional
 
 import boto3
-
-from lambda_a.common.orders import OrdersSchema
+from botocore.exceptions import ClientError
 
 TABLE_NAME = os.environ["DYNAMODB_TABLE_NAME"]
+dynamodb = boto3.client("dynamodb")
 
 
-def retrieve_orders_from_dynamodb():
-    """Retrieve orders from DynamoDB."""
-    dynamodb = boto3.client("dynamodb")
-    response = dynamodb.scan(TableName=TABLE_NAME)
-    orders: OrdersSchema = response["Items"]
-    return orders
+def retrieve_items_from_dynamodb(table_name):
+
+    try:
+        # Retrieve the item
+        response = dynamodb.scan(TableName=table_name)
+
+        # Check if the item exists in the response
+        if "Item" in response:
+            return response["Item"]["orders"]
+        return None
+
+    except ClientError as e:
+        print(f"Error: {e}")
+        return None
+
+
+def gen_random() -> Dict[str, Any]:
+    """Generate Random T/F"""
+    return {"results": random.choice([True, False])}
 
 
 def lambda_handler(event: Dict[str, Any], context: Optional[Any]) -> Dict[str, Any]:
     """Generate event for results processing."""
-    response: Dict[str, Any] = {"results": random.choice([True, False])}
+    response = gen_random()
     if response["results"]:
-        # iterate over orders from dynamodb
-        orders = retrieve_orders_from_dynamodb()
-        if not orders:
-            print("No orders found.")
-            # put in mechanism to filter out only new orders
-        else:
-            print(f"Found {len(orders)} new order(s).")
-            response["orders"] = orders
-
+        # T => Get Orders from DynamoDB
+        response["orders"] = retrieve_items_from_dynamodb(table_name=TABLE_NAME)
     return response
-
-
-#  response["orders"] = [
-#                 {
-#                     "status": "accepted",
-#                     "power": 1,
-#                 },
-#                 {
-#                     "status": "rejected",
-#                     "power": 2,
-#                 },
-#             ]
