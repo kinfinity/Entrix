@@ -1,7 +1,7 @@
 import { HttpMethod } from 'aws-cdk-lib/aws-events'
 import { Stack } from 'aws-cdk-lib'
 import EntrixLambda, { EntrixLambdaProps } from '../lib/compute/lambda'
-import EntrixAPIGatewayLambda from '../lib/constructs/apigatewaylambda'
+import EntrixAPIGatewayLambda, { EntrixAPIGatewayLambdaProps } from '../lib/constructs/apigatewaylambda'
 import { Capture, Match, Template } from 'aws-cdk-lib/assertions'
 import { beforeEach, describe, expect, it } from '@jest/globals'
 import { log } from 'node:console'
@@ -22,8 +22,11 @@ describe('EntrixAPIGatewayLambda', () => {
     }
     const lambdaName = 'TestEntrixLambda'
     const lambdaFunction = new EntrixLambda(stack, 'lambda_id', lambdaName, postLambdaProps)
-    const httpMethod = HttpMethod.POST
-    new EntrixAPIGatewayLambda(stack, 'TestEntrixAPIGatewayLambda', lambdaFunction, { httpMethod })
+    const apiGatewayLambdaProps: EntrixAPIGatewayLambdaProps = {
+      path: "/orders",
+      httpMethod: HttpMethod.POST
+    }
+    new EntrixAPIGatewayLambda(stack, 'TestEntrixAPIGatewayLambda', lambdaFunction, apiGatewayLambdaProps)
 
     // Prepare stack for Assertions
     const template = Template.fromStack(stack)
