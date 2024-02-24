@@ -36,7 +36,7 @@ describe('EntrixLambda', () => {
     // Check template
     template.hasResource("AWS::Lambda::Function", {
         Properties: {
-          FunctionName: functionName
+          FunctionName: `k_${functionName}`
         }
       })
       
@@ -64,7 +64,7 @@ describe('EntrixLambda', () => {
     // Assert
     template.hasResource("AWS::Lambda::Function", {
       Properties: {
-        FunctionName: functionName,
+        FunctionName: `k_${functionName}`,
         Code: codeCapture
       }
     })
