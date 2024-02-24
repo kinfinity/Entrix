@@ -23,7 +23,7 @@ describe('EntrixAPIGatewayLambda', () => {
     const lambdaName = 'TestEntrixLambda'
     const lambdaFunction = new EntrixLambda(stack, 'lambda_id', lambdaName, postLambdaProps)
     const apiGatewayLambdaProps: EntrixAPIGatewayLambdaProps = {
-      path: "/orders",
+      path: "api",
       httpMethod: HttpMethod.POST
     }
     new EntrixAPIGatewayLambda(stack, 'TestEntrixAPIGatewayLambda', lambdaFunction, apiGatewayLambdaProps)
