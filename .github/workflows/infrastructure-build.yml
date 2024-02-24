@@ -43,10 +43,7 @@ jobs:
       - name: Install Dependencies
         run: |
           npm ci
-
-      - name: Run Unit Tests
-        run: |
-          npm run test
+          cdk --version
 
       - name: Infrastructure Changes
         run: |
@@ -66,3 +63,6 @@ jobs:
             AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
             AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
             
+      - name: Run Unit Tests
+        run: |
+          npm run test

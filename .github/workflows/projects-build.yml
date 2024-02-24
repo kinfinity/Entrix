@@ -20,6 +20,7 @@ jobs:
       checks: write
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: Dev
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,6 +47,13 @@ jobs:
           chmod +x ci/scripts/code/build-all-poetry-projects.sh
           chmod +x ci/scripts/code/build-poetry-project.sh
           ci/scripts/code/build-all-poetry-projects.sh
+        env:
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+            AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+            DYNAMODB_TABLE_NAME: "orders-table"
+            SNS_TOPIC_ARN: "arn:aws:sns:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:Orders-entrixOrderssnstopic9B1D64B6-Bn2sQPQfdwr4"
+            LOG_BUCKET: "entrix-orders-bucket"
 
       - name: Create test report
         uses: EnricoMi/publish-unit-test-result-action@v2
