@@ -41,6 +41,13 @@ jobs:
       - name: Setup Python tools
         run: |
           pip install poetry==1.7.1
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Build and test all projects
         run: |
@@ -48,9 +55,6 @@ jobs:
           chmod +x ci/scripts/code/build-poetry-project.sh
           ci/scripts/code/build-all-poetry-projects.sh
         env:
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
-            AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
             DYNAMODB_TABLE_NAME: "orders-table"
             SNS_TOPIC_ARN: "arn:aws:sns:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:Orders-entrixOrderssnstopic9B1D64B6-Bn2sQPQfdwr4"
             LOG_BUCKET: "entrix-orders-bucket"
