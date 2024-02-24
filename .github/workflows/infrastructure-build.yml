@@ -66,3 +66,10 @@ jobs:
       - name: Run Unit Tests
         run: |
           npm run test
+        env:
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          DYNAMODB_TABLE_NAME: "orders-table"
+          SNS_TOPIC_ARN: "arn:aws:sns:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:Orders-entrixOrderssnstopic9B1D64B6-Bn2sQPQfdwr4"
+          LOG_BUCKET: "entrix-orders-bucket"
