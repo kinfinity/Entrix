@@ -21,6 +21,8 @@ class EntrixLambdaS3 extends Construct {
         
         // Grant Lambda access to S3 Bucket
         this.s3.grantReadWrite(lambdaFunction.Function)
+        this.s3.grantPut(lambdaFunction.Function)
+        this.s3.grantPutAcl(lambdaFunction.Function)
 
     }
 

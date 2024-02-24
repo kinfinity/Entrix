@@ -7,6 +7,7 @@ import { Construct } from 'constructs'
 export interface EntrixLambdaProps {
     repositoryName: string
     tag: string
+    environment?: { [key: string]: string }
 }
 
 class EntrixLambda extends Construct {
@@ -22,12 +23,14 @@ class EntrixLambda extends Construct {
         const repo = ecr.Repository.fromRepositoryName(this, `entrix-${id}-${functionName}-ecr`, repository)
         
         const ecrImageCodeProps: aws_lambda.EcrImageCodeProps = {
-            tagOrDigest: tag
+            tagOrDigest: tag,
+            cmd: [`${functionName}.app.lambda_handler`]
           }
         const dockerImageFunctionProps: DockerImageFunctionProps = {
-            functionName: functionName,
+            functionName: `k_${functionName}`,
             code: DockerImageCode.fromEcr(repo, ecrImageCodeProps),
             memorySize: 256,
+            environment: (props?.environment) ? props.environment : {}
         }
 
         const fn = new DockerImageFunction(this, `entrix-${id}-${functionName}-lambda`, dockerImageFunctionProps)

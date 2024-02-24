@@ -7,6 +7,7 @@ import { LambdaInvoke } from "aws-cdk-lib/aws-stepfunctions-tasks"
 import EntrixEventBridgeCron from "../integration/eventbridge"
 import { CronOptions } from "aws-cdk-lib/aws-events"
 import { Construct } from "constructs"
+import EntrixCronTriggerTarget from "./crontriggertarget"
 
 
 export interface EntrixDataPipelineProps {
@@ -38,7 +39,7 @@ class EntrixDataPipeline extends Construct {
 
         // Control - check Lambda A Result into Retry  or Lambda B
         const choice = new Choice(this, `entrix-${id}-${props.lambdaA.functionName}-choice`)
-        const condition = Condition.booleanEquals('$.Payload', false)
+        const condition = Condition.booleanEquals('$.results', false)
         const finish = new Pass(this, 'Finish')
 
         // Create State Machine
@@ -68,7 +69,8 @@ class EntrixDataPipeline extends Construct {
         }
 
         // Setup Trigger
-        new EntrixEventBridgeCron(this, id, props.cronOptions)
+        const cron = new EntrixEventBridgeCron(this, id, props.cronOptions)
+        new EntrixCronTriggerTarget(this,id, cron, this.stateMachine )
         
   }
 

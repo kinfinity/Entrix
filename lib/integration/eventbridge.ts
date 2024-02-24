@@ -20,12 +20,8 @@ export class EntrixEventBridgeCron extends Construct {
         )
 
     }
-    /**
-     * Add Step Function Target
-     */
-    public addTargetStepFunctionTarget(stateMachine: StateMachine): void {
-      this.cron.addTarget(new SfnStateMachine(stateMachine))
-    }
+    
+    get Cron() : Rule { return this.cron}
 
 }
 

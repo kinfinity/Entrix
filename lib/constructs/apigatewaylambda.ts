@@ -6,6 +6,7 @@ import { LambdaRestApiProps } from 'aws-cdk-lib/aws-apigateway'
 
 export interface EntrixAPIGatewayLambdaProps {
   httpMethod: HttpMethod
+  path: string
 }
 
 export class EntrixAPIGatewayLambda extends Construct {
@@ -19,6 +20,7 @@ export class EntrixAPIGatewayLambda extends Construct {
 
       this.backend =  lambdaFunction.Function
       if (!this.backend){ throw new Error('No lambda function defined')}
+      const path = (props?.path) ? props.path : "/"
 
       let httpMethod = (props?.httpMethod) ? props.httpMethod : HttpMethod.POST
       let lambdaProps: LambdaRestApiProps = {
@@ -37,8 +39,8 @@ export class EntrixAPIGatewayLambda extends Construct {
         lambdaProps
       )
 
-      // Restrict -> POST /orders
-      const ordersResource = this.api.root.addResource('orders');
+      // Setup Path w Method
+      const ordersResource = this.api.root.addResource(path);
       ordersResource.addMethod(httpMethod);
 
       new cdk.CfnOutput(scope, "EndpointURL", { value: this.api.url! })
