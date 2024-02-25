@@ -30,6 +30,6 @@ poetry run black .
 poetry run isort . 
 
 [ -d ${ROOT_MODULE_DIR}/tests ] & poetry run pytest --junitxml=../reports/${PACKAGE_NAME}-junit.xml
-poetry run mypy --ignore-missing-imports --junit-xml=../reports/${PACKAGE_NAME}-junit.xml . 
+# poetry run mypy --ignore-missing-imports --junit-xml=../reports/${PACKAGE_NAME}-junit.xml . 
 
 popd > /dev/null

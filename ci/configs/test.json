@@ -1,0 +1,5 @@
+{
+  "httpMethod": "POST",
+  "path": "/api",
+  "body": "{\"orders\": [{\"order_id\": 1, \"product\": \"Product1\", \"power\": 2}, {\"order_id\": 2, \"product\": \"Product2\", \"power\": 1}]}"
+}
