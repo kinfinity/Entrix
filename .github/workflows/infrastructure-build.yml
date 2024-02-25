@@ -68,3 +68,58 @@ jobs:
           DYNAMODB_TABLE_NAME: "orders-table"
           SNS_TOPIC_ARN: "arn:aws:sns:${{ env.AWS_REGION }}:${{ secrets.AWS_ACCOUNT_ID }}:Orders-entrixOrderssnstopic9B1D64B6-Bn2sQPQfdwr4"
           LOG_BUCKET: "entrix-orders-bucket"
+
+  deploy_cdk_stage:
+    name: CDK_DEPLOY_STAGE
+    environment: Staging
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+          # Simulate successful Deployment
+      - name: Deploy to Staging
+        id: deploy_to_staging
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          echo "Infrastructure Deployed to Staging"
+
+  deploy_cdk_prod:
+    name: CDK_DEPLOY_PROD
+    environment: Prod
+    needs: deploy_cdk_stage
+    permissions:
+      contents: read
+      issues: read
+      checks: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+          # Simulate successful Deployment
+      - name: Deploy to Prod
+        id: deploy_to_production
+        run: |
+          echo "Infrastructure Deployed to Production"
