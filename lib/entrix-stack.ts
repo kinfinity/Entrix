@@ -70,8 +70,7 @@ export class EntrixStack extends Stack {
     snsTopic.Topic.grantPublish(lambdaB.Function)
 
     // Create Data Pipeline
-    const cron: CronOptions = {  
-      hour: '8',
+    const cron: CronOptions = {
       minute: '*/10' 
     }
     const dataPipelineProps: EntrixDataPipelineProps = {
